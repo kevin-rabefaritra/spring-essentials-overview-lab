@@ -10,6 +10,10 @@ import rewards.internal.restaurant.Restaurant;
 import rewards.internal.restaurant.RestaurantRepository;
 import rewards.internal.reward.RewardRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import common.money.MonetaryAmount;
 
 /**
@@ -30,7 +34,7 @@ import common.money.MonetaryAmount;
  * - Inject all 3 dependencies.  Decide if you should use field
  *   injection or constructor injection.
  */
-
+@Service
 public class RewardNetworkImpl implements RewardNetwork {
 
 	private AccountRepository accountRepository;
@@ -46,6 +50,8 @@ public class RewardNetworkImpl implements RewardNetwork {
 	 * @param rewardRepository the repository for recording a record of successful reward transactions
 	 */
 	
+	// This is the only constructor so we don't need to add @Autowired
+	@Autowired
 	public RewardNetworkImpl(AccountRepository accountRepository, RestaurantRepository restaurantRepository,
 			RewardRepository rewardRepository) {
 		this.accountRepository = accountRepository;

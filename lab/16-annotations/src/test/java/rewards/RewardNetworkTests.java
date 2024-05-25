@@ -1,13 +1,19 @@
 package rewards;
 
 import common.money.MonetaryAmount;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import javax.annotation.PostConstruct;
 
 /**
  * A system test that verifies the components of the RewardNetwork
@@ -41,6 +47,7 @@ public class RewardNetworkTests {
 		// Get rewardNetwork bean from the application context
 		rewardNetwork = context.getBean(RewardNetwork.class);
 	}
+
 
 	@Test
 	public void testRewardForDining() {

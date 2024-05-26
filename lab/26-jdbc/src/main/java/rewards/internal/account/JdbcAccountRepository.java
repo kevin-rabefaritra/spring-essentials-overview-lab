@@ -3,6 +3,8 @@ package rewards.internal.account;
 import common.money.MonetaryAmount;
 import common.money.Percentage;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -27,10 +29,10 @@ import java.sql.SQLException;
 //   object using the given DataSource object.
 public class JdbcAccountRepository implements AccountRepository {
 
-	private DataSource dataSource;
+	private JdbcTemplate jdbcTemplate;
 
-	public JdbcAccountRepository(DataSource dataSource) {
-		this.dataSource = dataSource;
+	public JdbcAccountRepository(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	// TODO-07 (Optional): Refactor this method using JdbcTemplate and ResultSetExtractor
@@ -40,7 +42,7 @@ public class JdbcAccountRepository implements AccountRepository {
 	//   mapAccount() method, which is provided in this class, to do all the work.
     // - Run the JdbcAccountRepositoryTests class. It should pass.
 	public Account findByCreditCard(String creditCardNumber) {
-		String sql = "select a.ID as ID, a.NUMBER as ACCOUNT_NUMBER, a.NAME as ACCOUNT_NAME, c.NUMBER as CREDIT_CARD_NUMBER, " +
+		/* String sql = "select a.ID as ID, a.NUMBER as ACCOUNT_NUMBER, a.NAME as ACCOUNT_NAME, c.NUMBER as CREDIT_CARD_NUMBER, " +
 			"	b.NAME as BENEFICIARY_NAME, b.ALLOCATION_PERCENTAGE as BENEFICIARY_ALLOCATION_PERCENTAGE, b.SAVINGS as BENEFICIARY_SAVINGS " +
 			"from T_ACCOUNT a, T_ACCOUNT_CREDIT_CARD c " +
 			"left outer join T_ACCOUNT_BENEFICIARY b " +
@@ -82,7 +84,20 @@ public class JdbcAccountRepository implements AccountRepository {
 				}
 			}
 		}
-		return account;
+		return account; */
+		
+		String sql = "select a.ID as ID, a.NUMBER as ACCOUNT_NUMBER, a.NAME as ACCOUNT_NAME, c.NUMBER as CREDIT_CARD_NUMBER, " +
+			"	b.NAME as BENEFICIARY_NAME, b.ALLOCATION_PERCENTAGE as BENEFICIARY_ALLOCATION_PERCENTAGE, b.SAVINGS as BENEFICIARY_SAVINGS " +
+			"from T_ACCOUNT a, T_ACCOUNT_CREDIT_CARD c " +
+			"left outer join T_ACCOUNT_BENEFICIARY b " +
+			"on a.ID = b.ACCOUNT_ID " +
+			"where c.ACCOUNT_ID = a.ID and c.NUMBER = ?";
+		
+		return jdbcTemplate.query(sql,
+			// (ResultSetExtractor<Account>)(resultSet) -> mapAccount(resultSet),
+			this::mapAccount,
+			creditCardNumber
+		);
 	}
 
 	// TODO-06: Refactor this method to use JdbcTemplate.
@@ -91,7 +106,7 @@ public class JdbcAccountRepository implements AccountRepository {
 	//   JdbcTemplate for each of those beneficiaries
 	// - Rerun the JdbcAccountRepositoryTests and verify it passes
 	public void updateBeneficiaries(Account account) {
-		String sql = "update T_ACCOUNT_BENEFICIARY SET SAVINGS = ? where ACCOUNT_ID = ? and NAME = ?";
+		/* String sql = "update T_ACCOUNT_BENEFICIARY SET SAVINGS = ? where ACCOUNT_ID = ? and NAME = ?";
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -120,6 +135,10 @@ public class JdbcAccountRepository implements AccountRepository {
 				} catch (SQLException ex) {
 				}
 			}
+		} */
+		String sql = "update T_ACCOUNT_BENEFICIARY SET SAVINGS = ? where ACCOUNT_ID = ? and NAME = ?";
+		for (Beneficiary beneficiary : account.getBeneficiaries()) {
+			jdbcTemplate.update(sql, beneficiary.getSavings().asBigDecimal(), account.getEntityId(), beneficiary.getName());
 		}
 	}
 

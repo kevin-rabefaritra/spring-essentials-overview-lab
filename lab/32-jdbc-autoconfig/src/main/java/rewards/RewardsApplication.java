@@ -69,17 +69,16 @@ public class RewardsApplication {
     //   gets displayed in the console
     @Bean
     CommandLineRunner commandLineRunner(JdbcTemplate jdbcTemplate) {
-        String query = "SELECT count(*) FROM T_ACCOUNT";
-        Long result = jdbcTemplate.queryForObject(query, Long.class);
+        Long result = jdbcTemplate.queryForObject(SQL, Long.class);
         return args -> {
-            System.out.println(String.format("Hello, there are %s accounts", result));
+            logger.info("Hello, there are {} accounts", result);
         };
     }
 
     @Bean
-    CommandLineRunner commandLineRunnerRecipient(@Value("${rewards.recipient.name}") String name) {
+    CommandLineRunner commandLineRunnerRecipient(RewardsRecipientProperties properties) {
         return args -> {
-            System.out.println(String.format("Reward recipient name is %s", name));
+            logger.info("Reward recipient name is {}", properties.getName());
         };
     }
 

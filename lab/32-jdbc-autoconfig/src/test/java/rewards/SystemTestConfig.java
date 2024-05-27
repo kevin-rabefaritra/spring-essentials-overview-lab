@@ -15,6 +15,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @Import(RewardsConfig.class)
+// Needs to be manually included because RewardsConfig is in a completely different package from SystemTestConfig
 public class SystemTestConfig {
 	private final Logger logger = LoggerFactory.getLogger(SystemTestConfig.class);
 
@@ -25,7 +26,7 @@ public class SystemTestConfig {
 	//   is no longer called
 
 	// @Bean
-	public DataSource dataSource() {
+	/* public DataSource dataSource() {
 		logger.debug("Creating the datasource bean explicitly");
 
 		return
@@ -33,6 +34,6 @@ public class SystemTestConfig {
 			.addScript("classpath:rewards/testdb/schema.sql")
 			.addScript("classpath:rewards/testdb/data.sql")
 			.build();
-	}
+	} */
 	
 }

@@ -6,6 +6,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -22,9 +24,12 @@ import static org.mockito.Mockito.*;
 /**
  * A JUnit test case testing the AccountController.
  */
+@SpringBootTest
 public class AccountControllerTests {
 
 	private AccountController controller;
+
+	@Autowired
 	private MeterRegistry registry;
 	private Counter counter;
 
@@ -37,14 +42,13 @@ public class AccountControllerTests {
 		// TODO-10: Fix compiler error
 		// - This constructor needs to pass MeterRegistry object as well
 		// - Run the tests (except the @Disabled ones) in this test class, they should pass
-		controller = new AccountController(new StubAccountManager());
+		controller = new AccountController(new StubAccountManager(), registry);
 	}
 
 	@Test
 	// TODO-19: Test the actuator endpoints
 	// - Remove @Disabled annotation below
 	// - Run this test - it should pass
-	@Disabled
 	public void testHandleDetailsRequest() {
 		Account account = controller.accountDetails(0);
 		assertNotNull(account);
